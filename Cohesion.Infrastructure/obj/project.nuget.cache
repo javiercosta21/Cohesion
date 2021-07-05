@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "OdlVmAvI7KWJXNlS309MvzcFxfRc9dJcgCb2W2dLqpfV4DLhjz4ASv/9eRbH9XR8PlgWm3NcE49Reqz45NP2Ow==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Javier\\source\\repos\\Cohesion.WebAPI\\Cohesion.Infrastructure\\Cohesion.Infrastructure.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Javier\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\Javier\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
