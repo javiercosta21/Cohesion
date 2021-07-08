@@ -1,5 +1,4 @@
-﻿using Cohesion.Domain;
-using Cohesion.Domain.ServiceRequests;
+﻿using Cohesion.Domain.ServiceRequests;
 using System;
 using System.Collections.Generic;
 
@@ -34,19 +33,6 @@ namespace Cohesion.Infrastructure.InMemoryDataAccess
                     DateTime.Now.AddDays(-1),
                     "John Foos",
                     DateTime.Now).Instance
-
-                //new ServiceRequest{ BuildingCode = "WQX", createdBy = "John Smith", createdDate = DateTime.Now.AddDays(-1)
-                //                , currentStatus = CurrentStatus.Created, description = "Please turn off the bathroom light"
-                //                , lastModifiedBy = "", lastModifiedDate = null},
-                //new ServiceRequest{ buildingCode ="SZX", createdBy = "Stan Lee", createdDate = DateTime.Now.AddDays(-1)
-                //                , currentStatus = CurrentStatus.InProgress, description = "Please close all windows"
-                //                , lastModifiedBy = "John Foos", lastModifiedDate = DateTime.Now},
-                //new ServiceRequest{ buildingCode ="WQX", createdBy = "Peter Jacobsen", createdDate = DateTime.Now.AddDays(-1)
-                //                , currentStatus = CurrentStatus.Canceled, description = "Please turn on tv"
-                //                , lastModifiedBy = "Laura Taylor", lastModifiedDate = DateTime.Now},
-                //new ServiceRequest{ buildingCode ="RTW", createdBy = "Josh Hernandez", createdDate = DateTime.Now.AddDays(-1)
-                //                , currentStatus = CurrentStatus.Complete, description = "Please set room temperature to 20 degrees"
-                //                , lastModifiedBy = "Sarah Jones", lastModifiedDate = DateTime.Now}
             };
         }
     }

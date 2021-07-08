@@ -1,15 +1,16 @@
 ﻿using Cohesion.Domain.ServiceRequests;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Cohesion.Application.ServiceRequests
 {
     public interface IServiceRequestAppService
     {
-        List<ServiceRequest> GetServiceRequests();
-        ServiceRequest GetServiceRequestById(Guid id);
-        ServiceRequestResult CreateServiceRequest(ServiceRequestDto input);
-        ServiceRequestResult EditServiceRequest(Guid originalId, ServiceRequestDto input);
-        void DeleteServiceRequestById(Guid id);
+        Task<List<ServiceRequest>> GetServiceRequests();
+        Task<ServiceRequest> GetServiceRequestById(Guid id);
+        Task<ServiceRequestResult> CreateServiceRequest(ServiceRequestDto input);
+        Task<ServiceRequestResult> EditServiceRequest(Guid originalId, ServiceRequestDto input);
+        Task DeleteServiceRequestById(Guid id);
     }
 }

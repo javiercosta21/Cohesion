@@ -3,6 +3,7 @@ using Cohesion.Domain.ServiceRequests;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Cohesion.WebAPI.ServiceRequests
 {
@@ -16,11 +17,11 @@ namespace Cohesion.WebAPI.ServiceRequests
             _serviceRequestAppService = serviceRequestAppService;
 
         [HttpGet(Name = "DeletedServiceRequest")]
-        public ActionResult<List<ServiceRequest>> Get()
+        public async Task<ActionResult<List<ServiceRequest>>> Get()
         {
             try
             {
-                List<ServiceRequest> serviceRequestList = _serviceRequestAppService.GetServiceRequests();
+                List<ServiceRequest> serviceRequestList = await _serviceRequestAppService.GetServiceRequests();
 
                 if (serviceRequestList.Count > 0) return Ok(serviceRequestList);
             }
@@ -32,11 +33,11 @@ namespace Cohesion.WebAPI.ServiceRequests
         }
 
         [HttpGet("{id:guid}", Name = "CreatedServiceRequest")]
-        public ActionResult<ServiceRequest> Get(Guid id)
+        public async Task<ActionResult<ServiceRequest>> Get(Guid id)
         {
             try
             {
-               return Ok(_serviceRequestAppService.GetServiceRequestById(id));
+               return Ok(await _serviceRequestAppService.GetServiceRequestById(id));
             }
             catch(InvalidOperationException ex)
             {
@@ -48,13 +49,13 @@ namespace Cohesion.WebAPI.ServiceRequests
             }
         }
 
-        public ActionResult Post([FromBody] ServiceRequestDto input)
+        public async Task<ActionResult> Post([FromBody] ServiceRequestDto input)
         {
             try
             {
                 if (!ModelState.IsValid) return BadRequest();
 
-                ServiceRequestResult result = _serviceRequestAppService.CreateServiceRequest(input);
+                ServiceRequestResult result = await _serviceRequestAppService.CreateServiceRequest(input);
                 if (result.ErrorMessages.Count > 0) return BadRequest(result.ErrorMessages);
             }
             catch(Exception ex)
@@ -66,18 +67,18 @@ namespace Cohesion.WebAPI.ServiceRequests
         }
 
         [HttpPut("{id:guid}")]
-        public ActionResult Put(Guid id, [FromBody] ServiceRequestDto input)
+        public async Task<ActionResult> Put(Guid id, [FromBody] ServiceRequestDto input)
         {
             try
             {
                 if (!ModelState.IsValid) return BadRequest();
 
-                ServiceRequestResult result = _serviceRequestAppService.EditServiceRequest(id, input);
+                ServiceRequestResult result = await _serviceRequestAppService.EditServiceRequest(id, input);
                 if (result.ErrorMessages.Count > 0) return BadRequest(result.ErrorMessages);
             }
             catch (InvalidOperationException ex)
             {
-                return NotFound();
+                return NotFound( ex.Message );
             }
             catch (Exception ex)
             {
@@ -87,11 +88,11 @@ namespace Cohesion.WebAPI.ServiceRequests
         }
 
         [HttpDelete("{id:guid}")]
-        public ActionResult Delete(Guid id)
+        public async Task<ActionResult> Delete(Guid id)
         {
             try
             {
-                _serviceRequestAppService.DeleteServiceRequestById(id);
+                await _serviceRequestAppService.DeleteServiceRequestById(id);
             }
             catch (InvalidOperationException ex)
             {

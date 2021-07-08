@@ -1,28 +1,32 @@
-﻿using Cohesion.Domain.ServiceRequests;
+﻿using Cohesion.Application.Utils;
+using Cohesion.Domain.ServiceRequests;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Cohesion.Application.ServiceRequests
 {
     public class ServiceRequestAppService : IServiceRequestAppService
     {
         private readonly IServiceRequestRepository  _serviceRequestRepository;
-        public ServiceRequestAppService(IServiceRequestRepository serviceRequestRepository)
+        private readonly IEmailSender _emailSender;
+        public ServiceRequestAppService(IServiceRequestRepository serviceRequestRepository, IEmailSender emailSender)
         {
             _serviceRequestRepository = serviceRequestRepository;
+            _emailSender = emailSender;
         }
 
-        public List<ServiceRequest> GetServiceRequests()
+        public async Task<List<ServiceRequest>> GetServiceRequests()
         {
-            return _serviceRequestRepository.GetAll();
+            return await _serviceRequestRepository.GetAll();
         }
 
-        public ServiceRequest GetServiceRequestById(Guid id)
+        public async Task<ServiceRequest> GetServiceRequestById(Guid id)
         {
-            return _serviceRequestRepository.GetById(id);
+            return await _serviceRequestRepository.GetById(id);
         }
 
-        public ServiceRequestResult CreateServiceRequest(ServiceRequestDto input)
+        public async Task<ServiceRequestResult> CreateServiceRequest(ServiceRequestDto input)
         {
             var result = ServiceRequest.Create(Guid.NewGuid(),
                  input.BuildingCode,
@@ -35,12 +39,12 @@ namespace Cohesion.Application.ServiceRequests
 
             if (result.ErrorMessages.Count > 0) return result;
 
-            _serviceRequestRepository.PostServiceRequest(result.Instance);
+            await _serviceRequestRepository.PostServiceRequest(result.Instance);
 
             return result;
         }
 
-        public ServiceRequestResult EditServiceRequest(Guid originalId, ServiceRequestDto input)
+        public async Task<ServiceRequestResult> EditServiceRequest(Guid originalId, ServiceRequestDto input)
         {
             var result = ServiceRequest.Edit(originalId,
                  input.BuildingCode,
@@ -52,18 +56,16 @@ namespace Cohesion.Application.ServiceRequests
                  input.LastModifiedDate);
 
             if (result.ErrorMessages.Count > 0) return result;
-
-            _serviceRequestRepository.PutServiceRequestById(result.Instance);
+            if((int)result.Instance.CurrentStatusCode == 3) { _emailSender.SendMail(result.Instance.Id.ToString()); }
+            await _serviceRequestRepository.PutServiceRequestById(result.Instance);
 
             return result;
         }
 
-        public void DeleteServiceRequestById(Guid id)
+        public async Task DeleteServiceRequestById(Guid id)
         {
-            _serviceRequestRepository.DeleteById(id);
-        }
-
-        
+            await _serviceRequestRepository.DeleteById(id);
+        }     
 
 
     }

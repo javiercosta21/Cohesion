@@ -11,7 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cohesion.Domain", "Cohesion
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cohesion.Infrastructure", "Cohesion.Infrastructure\Cohesion.Infrastructure.csproj", "{145AC9E8-BB3F-4885-BF62-44BE91A96752}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cohesion.Application.Tests", "Cohesion.Application.Tests\Cohesion.Application.Tests.csproj", "{5F0E72B7-5686-4BD9-BB07-6F827695B225}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cohesion.Application.Tests", "Cohesion.Application.Tests\Cohesion.Application.Tests.csproj", "{5F0E72B7-5686-4BD9-BB07-6F827695B225}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cohesion.Infrastructure.Tests", "Cohesion.Infrastructure.Tests\Cohesion.Infrastructure.Tests.csproj", "{8788C945-01EA-466D-9A1E-43130CD3377F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{25CC20D6-B545-4867-AC5D-0A125B4FE14F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cohesion.Domain.Tests", "Cohesion.Domain.Tests\Cohesion.Domain.Tests.csproj", "{1A82D1BE-D52F-41FA-856B-25E2F8DD0414}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,9 +45,22 @@ Global
 		{5F0E72B7-5686-4BD9-BB07-6F827695B225}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F0E72B7-5686-4BD9-BB07-6F827695B225}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F0E72B7-5686-4BD9-BB07-6F827695B225}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8788C945-01EA-466D-9A1E-43130CD3377F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8788C945-01EA-466D-9A1E-43130CD3377F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8788C945-01EA-466D-9A1E-43130CD3377F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8788C945-01EA-466D-9A1E-43130CD3377F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A82D1BE-D52F-41FA-856B-25E2F8DD0414}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A82D1BE-D52F-41FA-856B-25E2F8DD0414}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A82D1BE-D52F-41FA-856B-25E2F8DD0414}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A82D1BE-D52F-41FA-856B-25E2F8DD0414}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5F0E72B7-5686-4BD9-BB07-6F827695B225} = {25CC20D6-B545-4867-AC5D-0A125B4FE14F}
+		{8788C945-01EA-466D-9A1E-43130CD3377F} = {25CC20D6-B545-4867-AC5D-0A125B4FE14F}
+		{1A82D1BE-D52F-41FA-856B-25E2F8DD0414} = {25CC20D6-B545-4867-AC5D-0A125B4FE14F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {599924F1-A0FF-4D45-B236-313D1AC99C7D}

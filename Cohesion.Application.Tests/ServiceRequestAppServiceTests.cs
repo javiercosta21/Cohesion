@@ -1,11 +1,15 @@
 using Cohesion.Application.ServiceRequests;
+using Cohesion.Application.Utils;
 using Cohesion.Infrastructure.InMemoryDataAccess;
 using Cohesion.Infrastructure.InMemoryDataAccess.ServiceRequests;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Rhino.Mocks;
 using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Cohesion.Application.Tests
 {
@@ -17,10 +21,15 @@ namespace Cohesion.Application.Tests
         private DBContext _dBContext;
         private IServiceRequestRepository _serviceRequestRepository;
         private IServiceRequestAppService _serviceRequestAppService;
-
+        private IEmailSender _emailSender;
         public ServiceRequestAppServiceTests() 
         {
             var services = new ServiceCollection();
+            services.AddSingleton<IConfiguration>(new ConfigurationBuilder()
+           .SetBasePath(Directory.GetCurrentDirectory())
+           .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+           .Build());
+            services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<IServiceRequestAppService, ServiceRequestAppService>();
             services.AddTransient<IServiceRequestRepository, ServiceRequestRepository>();
             services.AddSingleton<DBContext>();
@@ -28,46 +37,48 @@ namespace Cohesion.Application.Tests
             var serviceProvider = services.BuildServiceProvider();
 
             _dBContext = serviceProvider.GetService<DBContext>();
-            _serviceRequestAppService = serviceProvider.GetService<IServiceRequestAppService>();
+            _emailSender = serviceProvider.GetService<IEmailSender>();
             _serviceRequestRepository = serviceProvider.GetService<IServiceRequestRepository>();
+            _serviceRequestAppService = serviceProvider.GetService<IServiceRequestAppService>();
+            
             _mockRepository = new MockRepository();
         }
 
 
         [TestMethod]
-        public void GetServiceRequests_OKTest()
+        public async Task GetServiceRequests_OKTest()
         {
-            var serviceRequestList = _serviceRequestAppService.GetServiceRequests();
+            var serviceRequestList = await _serviceRequestAppService.GetServiceRequests();
             Assert.IsTrue(serviceRequestList != null && serviceRequestList.Count > 0);
         }
 
         [TestMethod]
-        public void GetServiceRequests_FailTest()
+        public async Task GetServiceRequests_FailTest()
         {
             _dBContext.serviceRequests = null;
-            var serviceRequestList = _serviceRequestAppService.GetServiceRequests();
+            var serviceRequestList = await _serviceRequestAppService.GetServiceRequests();
             Assert.IsTrue(serviceRequestList == null);
         }
 
         [TestMethod]
-        public void GetServiceRequestById_OKTest()
+        public async Task GetServiceRequestById_OKTest()
         {
             var guidId = _dBContext.serviceRequests[1].Id;
-            var serviceRequestList = _serviceRequestAppService.GetServiceRequestById(guidId);
+            var serviceRequestList = await _serviceRequestAppService.GetServiceRequestById(guidId);
             Assert.IsTrue(serviceRequestList != null);
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void GetServiceRequestById_FailTest()
+        public async Task GetServiceRequestById_FailTest()
         {
             var guidId = Guid.NewGuid();
-            var serviceRequestList = _serviceRequestAppService.GetServiceRequestById(guidId);
+            var serviceRequestList = await _serviceRequestAppService.GetServiceRequestById(guidId);
             Assert.Fail();
         }
 
         [TestMethod]
-        public void CreateServiceRequest_OKTest()
+        public async Task CreateServiceRequest_OKTest()
         {
             var dbContextCount = _dBContext.serviceRequests.Count;
             var jsonstring = @"{
@@ -79,12 +90,12 @@ namespace Cohesion.Application.Tests
                             ""lastModifiedBy"": """",
                             ""lastModifiedDate"": null}";
             var objectfromjson = JsonConvert.DeserializeObject<ServiceRequestDto>(jsonstring);
-            var serviceRequestObject = _serviceRequestAppService.CreateServiceRequest(objectfromjson);
+            var serviceRequestObject = await _serviceRequestAppService.CreateServiceRequest(objectfromjson);
             Assert.IsTrue(serviceRequestObject != null && _dBContext.serviceRequests.Count > dbContextCount);
         }
 
         [TestMethod]
-        public void CreateServiceRequest_FailTest()
+        public async Task CreateServiceRequest_FailTest()
         {
             var dbContextCount = _dBContext.serviceRequests.Count;
             var jsonstring = @"{
@@ -96,12 +107,12 @@ namespace Cohesion.Application.Tests
                             ""lastModifiedBy"": """",
                             ""lastModifiedDate"": null}";
             var objectfromjson = JsonConvert.DeserializeObject<ServiceRequestDto>(jsonstring);
-            var serviceRequestObject = _serviceRequestAppService.CreateServiceRequest(objectfromjson);
+            var serviceRequestObject = await _serviceRequestAppService.CreateServiceRequest(objectfromjson);
             Assert.IsTrue(serviceRequestObject.ErrorMessages.Count > 0 && _dBContext.serviceRequests.Count == dbContextCount);
         }
 
         [TestMethod]
-        public void EditServiceRequest_OKTest()
+        public async Task EditServiceRequest_OKTest()
         {
             var dbContextCount = _dBContext.serviceRequests.Count;
             var originalId = _dBContext.serviceRequests[1].Id;
@@ -114,13 +125,13 @@ namespace Cohesion.Application.Tests
                             ""lastModifiedBy"": """",
                             ""lastModifiedDate"": null}";
             var objectfromjson = JsonConvert.DeserializeObject<ServiceRequestDto>(jsonstring);
-            var serviceRequestObject = _serviceRequestAppService.EditServiceRequest(originalId, objectfromjson);
+            var serviceRequestObject = await _serviceRequestAppService.EditServiceRequest(originalId, objectfromjson);
             Assert.IsTrue(serviceRequestObject.Instance != null && serviceRequestObject.Instance.BuildingCode == "FFF" && _dBContext.serviceRequests.Count == dbContextCount);
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void EditServiceRequest_FailTest()
+        public async Task EditServiceRequest_FailTest()
         {
             var originalId = Guid.NewGuid();
             var jsonstring = @"{
@@ -132,25 +143,25 @@ namespace Cohesion.Application.Tests
                             ""lastModifiedBy"": """",
                             ""lastModifiedDate"": null}";
             var objectfromjson = JsonConvert.DeserializeObject<ServiceRequestDto>(jsonstring);
-            var serviceRequestObject = _serviceRequestAppService.EditServiceRequest(originalId, objectfromjson);
+            var serviceRequestObject = await _serviceRequestAppService.EditServiceRequest(originalId, objectfromjson);
             Assert.Fail();
         }
 
         [TestMethod]
-        public void DeleteServiceRequestById_OKTest()
+        public async Task DeleteServiceRequestById_OKTest()
         {
             var dbContextCount = _dBContext.serviceRequests.Count;
             var guidId = _dBContext.serviceRequests[1].Id;
-            _serviceRequestAppService.DeleteServiceRequestById(guidId);
+            await _serviceRequestAppService.DeleteServiceRequestById(guidId);
             Assert.IsTrue(_dBContext.serviceRequests.Count < dbContextCount);
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void DeleteServiceRequestById_FailTest()
+        public async Task DeleteServiceRequestById_FailTest()
         {
             var guidId = Guid.NewGuid();
-            var serviceRequestList = _serviceRequestAppService.GetServiceRequestById(guidId);
+            var serviceRequestList = await _serviceRequestAppService.GetServiceRequestById(guidId);
             Assert.Fail();
         }
     }

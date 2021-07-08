@@ -5,7 +5,7 @@ namespace Cohesion.Domain.ServiceRequests
 {
     public sealed class ServiceRequest
     {
-        private ServiceRequest(Guid id,
+        public ServiceRequest(Guid id,
             string buildingCode,
             string description,
             CurrentStatus currentStatusCode,
@@ -24,7 +24,7 @@ namespace Cohesion.Domain.ServiceRequests
             LastModifiedDate = lastModifiedDate;
         }
 
-        public Guid Id { get; }
+        public Guid Id { get; set; }
         public string BuildingCode { get; set; }
         public string Description { get; set; }
         public CurrentStatus CurrentStatusCode { get; set; }
